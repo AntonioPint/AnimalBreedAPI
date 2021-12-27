@@ -7,14 +7,15 @@ app.use(express.static(__dirname + '/public'));
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({extended: false}));
 
-let breeds = JSON.parse(fs.readFileSync("breeds.json","utf-8"));
-let animaltypes = JSON.parse(fs.readFileSync("animaltypes.json","utf-8"));
+let breeds = JSON.parse(fs.readFileSync("data/breeds.json","utf-8"));
+let animaltypes = JSON.parse(fs.readFileSync("data/animaltypes.json","utf-8"));
 let yummybreedsUrl = "https://api.yummypets.com/breeds";
 let yummytypesUrl = "https://api.yummypets.com/pets/types";
+let counter = parseInt(fs.readFileSync("data/counter.txt","utf8"));
 
 app.use("/", (req, res, next)=>{
-    counter = parseInt(fs.readFileSync("mynewfile1.txt","utf8"));
-    fs.writeFileSync("mynewfile1.txt", "" + ++counter);
+    counter = parseInt(fs.readFileSync("data/counter.txt","utf8"));
+    fs.writeFileSync("data/counter.txt", "" + ++counter);
     next();
 })
 app.get("/", (req, res) =>{

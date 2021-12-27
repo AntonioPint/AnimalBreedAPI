@@ -1,0 +1,2 @@
+An error ocurred accessing data from yummipets' API at Mon, 27 Dec 2021 22:15:36 GMT. TypeError: Cannot read properties of undefined (reading 'num_found')
+An error ocurred accessing data from yummipets' API at Mon, 27 Dec 2021 22:16:04 GMT. TypeError: Cannot read properties of undefined (reading 'num_found')
