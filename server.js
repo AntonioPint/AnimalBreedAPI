@@ -2,6 +2,7 @@ const express = require("express")
 const axios = require("axios");
 const fs = require("fs");
 
+const PORT = process.env.PORT || 8080;
 let app = express();
 app.use(express.static(__dirname + '/public'));
 // app.use(bodyParser.json());
@@ -63,4 +64,4 @@ function updateData(){
 updateData();
 setInterval(updateData, 399900099); //runs every 4,6 days 
 
-app.listen(8080, console.log("Server running..."));
+app.listen(PORT, console.log(`Server running at port ${PORT}...`));
