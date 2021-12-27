@@ -1,0 +1,67 @@
+{
+    "collection": [
+        {
+            "resource": {
+                "id": 1,
+                "lib": "Chien",
+                "slug": "dog"
+            }
+        },
+        {
+            "resource": {
+                "id": 2,
+                "lib": "Chat",
+                "slug": "cat"
+            }
+        },
+        {
+            "resource": {
+                "id": 6,
+                "lib": "Reptile",
+                "slug": "reptile"
+            }
+        },
+        {
+            "resource": {
+                "id": 7,
+                "lib": "Poisson",
+                "slug": "fish"
+            }
+        },
+        {
+            "resource": {
+                "id": 8,
+                "lib": "Oiseau",
+                "slug": "bird"
+            }
+        },
+        {
+            "resource": {
+                "id": 9,
+                "lib": "Rongeur",
+                "slug": "rodent"
+            }
+        },
+        {
+            "resource": {
+                "id": 10,
+                "lib": "Cheval",
+                "slug": "horse"
+            }
+        },
+        {
+            "resource": {
+                "id": 12,
+                "lib": "Insecte",
+                "slug": "insect"
+            }
+        },
+        {
+            "resource": {
+                "id": 13,
+                "lib": "Autres",
+                "slug": "other"
+            }
+        }
+    ]
+}
