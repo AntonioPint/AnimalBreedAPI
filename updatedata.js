@@ -7,6 +7,10 @@ let yummytypesUrl = "https://api.yummypets.com/pets/types";
 let breeds = {"collection": [], "extras": {"num_found": 0}};
 let animaltypes = {"collection":[]};
 
+if(!fs.existsSync("./data")){
+    fs.mkdirSync("./data");
+}
+
 function createFiles(){
     try {
         breeds = JSON.parse(fs.readFileSync("data/breeds.json", "utf-8"));
