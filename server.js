@@ -1,8 +1,9 @@
-const express = require("express")
-const axios = require("axios");
+const express = require("express");
 const fs = require("fs");
-
 const PORT = process.env.PORT || 8080;
+
+let {incrementCounter} = require("./counter");
+let updtDt = require("./updatedata");
 let app = express();
 app.use(express.static(__dirname + '/public'));
 // app.use(bodyParser.json());
@@ -10,13 +11,10 @@ app.use(express.static(__dirname + '/public'));
 
 let breeds = JSON.parse(fs.readFileSync("data/breeds.json","utf-8"));
 let animaltypes = JSON.parse(fs.readFileSync("data/animaltypes.json","utf-8"));
-let yummybreedsUrl = "https://api.yummypets.com/breeds";
-let yummytypesUrl = "https://api.yummypets.com/pets/types";
-let counter = parseInt(fs.readFileSync("data/counter.txt","utf8"));
+
 
 app.use("/api", (req, res, next)=>{
-    counter = parseInt(fs.readFileSync("data/counter.txt","utf8"));
-    fs.writeFileSync("data/counter.txt", "" + ++counter);
+    incrementCounter();
     next();
 })
 
@@ -32,36 +30,7 @@ app.get("/api/breeds", (req, res) =>{
     res.send("ola");
 });
 
-function updateData(){
-    axios(yummybreedsUrl).
-    then((res) => {
-        try { // api.yummipets could be not available
-            if(breeds.extras.num_found < res.data.extras.num_found){ //new data to be added
-                fs.writeFileSync("data.json", JSON.stringify(res), err => {
-                    fs.appendFileSync("logs.txt", `An error ocurred writing to file breeds.json at ${new Date(Date.now()).toUTCString()}. ${err}\n`)
-                })
-            }
-        }catch(err){
-            fs.appendFileSync("logs.txt", `An error ocurred accessing data from yummipets' API at ${new Date(Date.now()).toUTCString()}. ${err}\n`)
-        }
-    });
-    axios(yummytypesUrl).
-    then((res) => {
-        try { // api.yummipets could be not available
-            if(animaltypes.collection.length < res.data.collection.length){ //new data to be added
-                fs.writeFileSync("data.json", JSON.stringify(res), err => {
-                    fs.appendFileSync("logs.txt", `An error ocurred writing to file animaltypes.json at ${new Date(Date.now()).toUTCString()}. ${err}\n`)
-                })
-            }
-        }catch(err){
-            fs.appendFileSync("logs.txt", `An error ocurred accessing data from yummipets' API at ${new Date(Date.now()).toUTCString()}. ${err}\n`)
-        }
-    })
-}
-
-
-
-updateData();
-setInterval(updateData, 399900099); //runs every 4,6 days 
+updtDt.updateData();
+setInterval(updtDt.updateData, 399900099); //runs every 4 ⅗ days 
 
 app.listen(PORT, console.log(`Server running at port ${PORT}...`));

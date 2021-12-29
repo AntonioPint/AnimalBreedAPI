@@ -1,1 +1,1 @@
-An error ocurred accessing data from yummipets' API at Mon, 27 Dec 2021 22:12:58 GMT. TypeError: Cannot read properties of undefined (reading 'num_found')
+An error ocurred writing to file breeds.json at Wed, 29 Dec 2021 12:01:09 GMT. Error: ENOENT: no such file or directory, open 'data/counter.txt'
