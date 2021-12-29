@@ -8,9 +8,19 @@ let app = express();
 app.use(express.static(__dirname + '/public'));
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({extended: false}));
+// try{
+//     let breeds = JSON.parse(fs.readFileSync("data/breeds.json","utf-8"));
+// }catch (err){
 
-let breeds = JSON.parse(fs.readFileSync("data/breeds.json","utf-8"));
-let animaltypes = JSON.parse(fs.readFileSync("data/animaltypes.json","utf-8"));
+// }
+// try{
+//     let animaltypes = JSON.parse(fs.readFileSync("data/animaltypes.json","utf-8"));
+// }catch (err){
+
+// }
+// let breeds = JSON.parse(fs.readFileSync("data/breeds.json","utf-8"));
+// let animaltypes = JSON.parse(fs.readFileSync("data/animaltypes.json","utf-8"));
+
 
 
 app.use("/api", (req, res, next)=>{
