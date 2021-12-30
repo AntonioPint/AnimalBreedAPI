@@ -37,17 +37,17 @@ app.get("/api/types/:id?", (req, res) =>{
         if(!req.params.id && !req.body.type){
             console.log(1);
             response.push({"id": element.resource.id, "type": element.resource.slug})
-        }
-
-        if(!!req.params.id && req.params.id == element.resource.id){
-            console.log(2);
-            response.push({"id": element.resource.id, "type": element.resource.slug})
-        }
-
-        if(!!req.body.type && req.body.type == element.resource.slug){
-            console.log(3);
-            response.push({"id": element.resource.id, "type": element.resource.slug})
-        }
+        }else if(!req.params.id ^ !req.body.type){
+            if(!!req.params.id && req.params.id == element.resource.id){
+                console.log(2);
+                response.push({"id": element.resource.id, "type": element.resource.slug})
+            }
+    
+            if(!!req.body.type && req.body.type == element.resource.slug){
+                console.log(3);
+                response.push({"id": element.resource.id, "type": element.resource.slug})
+            }
+        }  
     });
 
     res.send(prettyJSON(response, Date.now() - begin_date));
