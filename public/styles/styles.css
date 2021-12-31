@@ -1,8 +1,15 @@
 .col-2{
- width: 16.6%;   
- background-color: #35363A;
+    width: 16.6%;   
+    background-color: #35363A;
 }
-
+#description{
+    width: 80%;
+    display: block;
+    font-size: 1.2em; 
+    font-style: italic;
+    margin: 5% auto;
+    text-align: center;
+}
 .col-8{
     width: 66.8%;   
     color: #35363A;
@@ -12,16 +19,40 @@
     border-radius: 20px;
     background-color: white ;
     /* margin: 0 100px; */
-    height: 1000px;
-    padding: 10px 100px;
+    padding: 10px 40px;
     border: solid white 1px;
-    text-align: center;
+}
+
+.methodInfo{
+    background-color: rgb(207, 207, 207);    
+    border-radius: 20px;
+    box-shadow: 2px 2px 3px #5e5e5e79;
+    padding: 10px 40px;
+    margin: 5px;
+    height: 200px;
+}
+.method{
+    color: rgb(90, 117, 90);
+    padding-left: 50px;
+}
+
+.methodInfo h2{
+    color: rgb(224, 41, 41);
+    font-size: 2rem;
+    display: flex;
+    font-weight: bold;
+    -webkit-text-stroke: 1px rgb(211, 6, 6); /* width and color */
 }
 
 body{
     display: flex;
     background-color: #35363A;
     margin:0;
+    font-family: "PT Serif", georgia, times, serif;
+}
+
+.removeLinkStyle{
+    text-decoration: inherit; /* no underline */
 }
 
 ::-webkit-scrollbar
@@ -37,3 +68,18 @@ body{
     box-shadow: inset 0 0 6px rgba(14, 14, 14, 0.7);
 	background-color: rgba(114, 114, 114, 0.7);
 }
+
+@media only screen and (max-width: 860px) {
+    aside{
+        display: none;
+    }
+    .col-8{
+        width: 100%;
+    }
+    .col-2{
+        width: 100%;
+    }
+    #content{
+        padding: 10px 10px;
+    }
+  }
