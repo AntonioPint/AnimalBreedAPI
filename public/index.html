@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AnimalBreedAPI</title>
     <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="styles/fontawesome-free-6.0.0-beta3-web/css/all.min.css">
 </head>
 <body>
     <aside class="col-2"></aside>
@@ -16,11 +17,19 @@
         <div>
             <div class="methodInfo">
                 <h2>GET</h2>
-                <a class="removeLinkStyle method"href="javascript:window.location.href = window.location.href + 'api/types'">/api/types</a>
-                <h3>Request</h3>
-                <span></span>
-                <h3>Response</h3>
-                <span></span>
+                <p>Gives a complete list of all the breeds stored in the api. The list is returned in format JSON. Every object returned has an internal id and his name in English (EN).</p>
+                <a class="removeLinkStyle method" href="javascript:window.location.href = window.location.href + 'api/types'">/api/types</a>
+                <div>
+                    <h3><button class="removeButtonStyle"><i class="fas fa-angle-down toggleRequest"></i></button> Request</h3>
+                    <span></span>
+                </div>
+                
+                
+                <div>
+                    <h3><i class="fas fa-angle-down toggleResponse"></i> Response</h3>
+                    <span></span>
+                </div>
+                
             </div>
             
         </div>
