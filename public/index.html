@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,35 +8,40 @@
     <title>AnimalBreedAPI</title>
     <link rel="stylesheet" href="styles/styles.css">
     <link rel="stylesheet" href="styles/fontawesome-free-6.0.0-beta3-web/css/all.min.css">
+
 </head>
+
 <body>
     <aside class="col-2"></aside>
     <div class="col-8" id="content">
         <img src="images/welcome.PNG" width="100%">
-        <span id="description">AnimalBreedAPI is an API that provides the most common and popular breeds among the various pets in your household.</span>
+        <span id="description">AnimalBreedAPI is an API that provides the most common and popular breeds among the
+            various pets in your household.</span>
         <h1>Documentation</h1>
         <div>
             <div class="methodInfo">
                 <h2>GET</h2>
-                <p>Gives a complete list of all the breeds stored in the api. The list is returned in format JSON. Every object returned has an internal id and his name in English (EN).</p>
-                <a class="removeLinkStyle method" href="javascript:window.location.href = window.location.href + 'api/types'">/api/types</a>
-                <div>
-                    <h3><button class="removeButtonStyle"><i class="fas fa-angle-down toggleRequest"></i></button> Request</h3>
-                    <span></span>
-                </div>
-                
-                
-                <div>
-                    <h3><i class="fas fa-angle-down toggleResponse"></i> Response</h3>
-                    <span></span>
+                <p>Gives a complete list of all the breeds stored in the api. The list is returned in format JSON. Every
+                    object returned has an internal id and his name in English (EN).</p>
+                <a class="removeLinkStyle method"
+                    href="javascript:window.location.href = window.location.href + 'api/types'">/api/types</a>
+                <div style="    margin-top: 15px;">
+                    <div id="request_div1" class="toggleRequestResponse">
+                        <h3><button class="removeButtonStyle" onclick="toggleResponseRequest('request_div1')"><i
+                                    class="fas fa-angle-down toggleRequest"></i></button> Request</h3>
+                        <p id="request_div1_p" class="notVisible" >Ola</p>
+                    </div>
+                    <div id="response_div1" class="toggleRequestResponse">
+                        <h3><button class="removeButtonStyle" onclick="toggleResponseRequest('response_div1')"><i
+                                    class="fas fa-angle-down toggleRequest"></i></button> Response</h3>
+                        <p id="response_div1_p" class="notVisible" >Ola</p>
+                    </div>
                 </div>
                 
             </div>
-            
         </div>
     </div>
     <aside class="col-2"></aside>
 </body>
+<script src="scripts/index.js"></script>
 </html>
-
-
