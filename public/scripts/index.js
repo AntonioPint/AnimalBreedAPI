@@ -12,3 +12,11 @@ function toggleResponseRequest(elementID) {
         paragraphElement.classList.remove("notVisible");
     }
 }
+
+async function redirectToAPI(url) {
+     let completeurl = window.location.href + url;
+
+     const response = await fetch(completeurl, {method: "POST", headers: {"API_KEY": process.env.API_KEY}})
+     console.log(response);
+    console.log("ola")
+}

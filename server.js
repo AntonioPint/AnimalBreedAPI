@@ -1,5 +1,6 @@
 const express = require("express");
 const fs = require("fs");
+require("dotenv").config();
 const PORT = process.env.PORT || 8080;
 
 let { incrementCounter } = require("./counter");
@@ -25,8 +26,13 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", (req, res, next) => {
-    incrementCounter();
-    next();
+    let api_key = req.headers.api_key || req.headers.API_KEY;
+    if(!!api_key && process.env.API_KEY == api_key){
+        incrementCounter();
+        next();
+    }else{
+        res.status(403).send("Access Denied - No API_KEY received")
+    }
 })
 
 app.get("/api/types/:id?", (req, res) => {

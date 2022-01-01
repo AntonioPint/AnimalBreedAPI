@@ -21,20 +21,54 @@
         <div>
             <div class="methodInfo">
                 <h2>GET</h2>
-                <p>Gives a complete list of all the breeds stored in the api. The list is returned in format JSON. Every
+                <p>Gives a complete list of all the types of animals stored in the api. The list is returned in format
+                    JSON. Every
                     object returned has an internal id and his name in English (EN).</p>
-                <a class="removeLinkStyle method"
-                    href="javascript:window.location.href = window.location.href + 'api/types'">/api/types</a>
+                <div class="method" href="javascript:window.location.href = window.location.href + 'api/types'">
+                    /api/types</div>
+
                 <div style="    margin-top: 15px;">
                     <div id="request_div1" class="toggleRequestResponse">
                         <h3><button class="removeButtonStyle" onclick="toggleResponseRequest('request_div1')"><i
                                     class="fas fa-angle-down toggleRequest"></i></button> Request</h3>
-                        <p id="request_div1_p" class="notVisible">Ola</p>
+                        <div id="request_div1_p" class="notVisible">
+                            <h4>Headers</h4>
+                            <ul>
+                                <li>API_KEY - The API Key that is needed to receive data from the application</li>
+                            </ul>
+                            <h4>Params</h4>
+                            <ul>
+                                <li>id - The id of the type of animal</li>
+                            </ul>
+                            <h4>Body</h4>
+                            <ul>
+                                <li>type - The the type of animal</li>
+                            </ul>
+                        </div>
                     </div>
                     <div id="response_div1" class="toggleRequestResponse">
                         <h3><button class="removeButtonStyle" onclick="toggleResponseRequest('response_div1')"><i
                                     class="fas fa-angle-down toggleRequest"></i></button> Response</h3>
-                        <p id="response_div1_p" class="notVisible">Ola</p>
+                        <div id="response_div1_p" class="notVisible">
+                        <pre><code>
+    {
+        "response": [
+            {
+                "id": 4,
+                "breed": "Gecko",
+                "type": "reptile"
+            },{
+                "id": 990,
+                "breed": "Pomsky",
+                "type": "dog"
+            }
+        ],
+        "res_size": 2,
+        "res_time": "0ms"
+    }
+                        </code>
+                    </pre>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -45,3 +79,4 @@
 <script src="scripts/index.js"></script>
 
 </html>
+<!-- Gives a complete list of all the breeds stored in the api. The list is returned in format JSON. Every object returned has an internal id , the name of the breed and how the type of breed. all in English (EN). -->
