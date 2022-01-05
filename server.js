@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 require("dotenv").config();
 const PORT = process.env.PORT || 8080;
+const jwt = require('jsonwebtoken');
 
 let { incrementCounter } = require("./counter");
 let updtDt = require("./updatedata");
@@ -26,13 +27,15 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", (req, res, next) => {
-    let api_key = req.headers.api_key || req.headers.API_KEY;
-    if(!!api_key && process.env.API_KEY == api_key){
-        incrementCounter();
-        next();
+
+    if(!!req.headers.api_key || !!req.headers.API_KEY){
+        authenticateApiKey(req, res, next);
+    }else if(!!req.headers.authorization_token){
+        //not for production yet
+        //authenticateToken(req, res, next);
     }else{
-        res.status(403).send("Access Denied - No API_KEY received")
-    }
+        res.status(500).json("No API_KEY or authorization_token received")
+    } 
 })
 
 app.get("/api/types/:id?", (req, res) => {
@@ -73,6 +76,28 @@ app.get("/api/breeds/:id?", (req, res) => {
     res.send(prettyJSON(response, Date.now() - begin_date));
 });
 
+function authenticateApiKey(req, res, next){
+    //API_KEY
+    let api_key = req.headers.api_key || req.headers.API_KEY;
+    if(!!api_key && process.env.API_KEY == api_key){
+        incrementCounter();
+        next();
+    }else{
+        return res.status(500).send("Access Denied - Invalid API_KEY received")
+    }
+}
+
+function authenticateToken(req,res,next){
+    const authtoken = req.headers.authorization_token;
+    if(authtoken == null) return res.sendStatus(401)
+    jwt.verify(authtoken, process.env.APP_TOKEN, (err, decoded) =>{
+        if(err) return res.sendStatus(403)
+        req.user = decoded.name;
+        next();
+    });
+
+}
+
 function prettyJSON(response, responseTime) {
     return {
         "response": response,
@@ -84,4 +109,4 @@ function prettyJSON(response, responseTime) {
 updtDt.updateData();
 setInterval(updtDt.updateData, 399900099); //runs every 4 ⅗ days 
 
-app.listen(PORT, console.log(`Server running at port ${PORT}...`));
+app.listen(PORT, console.log(`Server running at port ${PORT} ...`));
