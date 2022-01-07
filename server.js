@@ -95,7 +95,6 @@ function authenticateToken(req,res,next){
         req.user = decoded.name;
         next();
     });
-
 }
 
 function prettyJSON(response, responseTime) {

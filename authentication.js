@@ -1,5 +1,6 @@
 const express = require("express");
-const fs = require("fs");
+const req = require("express/lib/request");
+const res = require("express/lib/response");
 const jwt = require('jsonwebtoken');
 
 require("dotenv").config();
@@ -7,10 +8,8 @@ require("dotenv").config();
 const PORT = 8081;
 
 let app = express();
-app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
 
 app.post("/login",(req,res) =>{
     let name = req.body.name;
