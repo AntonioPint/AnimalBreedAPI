@@ -1,56 +1,63 @@
 const fs = require("fs");
 const axios = require("axios");
+const mysql = require('mysql');
 
 let yummybreedsUrl = "https://api.yummypets.com/breeds";
 let yummytypesUrl = "https://api.yummypets.com/pets/types";
 
-let breeds = {"collection": [], "extras": {"num_found": 0}};
-let animaltypes = {"collection":[]};
+function updateData(db) {
+    console.log("Searching and updating database with new data");
+    // Update Types from yummy api
+    let sizeTypes;
+    db.query(`select count(*) from ANIMAL_TYPE `, (err, results) => {
+        if (err) throw err;
+        sizeTypes = results[0]["count(*)"]
+    });
 
-if(!fs.existsSync("./data")){
-    fs.mkdirSync("./data");
-}
-
-function createFiles(){
-    try {
-        breeds = JSON.parse(fs.readFileSync("data/breeds.json", "utf-8"));
-    } catch (err){
-        fs.appendFileSync("data/breeds.json", JSON.stringify(breeds));
-    }
-
-    try {
-        animaltypes = JSON.parse(fs.readFileSync("data/animaltypes.json","utf-8"));
-    } catch (err){
-        fs.appendFileSync("data/animaltypes.json", JSON.stringify(animaltypes));
-    }
-}
-
-function updateData(){
-    createFiles();
-    axios(yummybreedsUrl).
-    then((res) => {
+    axios(yummytypesUrl).then((res) => {
         try { // api.yummipets could be not available
-            if(breeds.extras.num_found < res.data.extras.num_found){ //new data to be added
-                fs.writeFileSync("data/breeds.json", JSON.stringify(res.data), err => {
-                    fs.appendFileSync("data/logs.txt", `An error ocurred writing to file breeds.json at ${new Date(Date.now()).toUTCString()}. ${err}\n`)
-                })
+            if (res.data.collection.length > sizeTypes) { //new data to be added
+                res.data.collection.forEach(element => {
+                    db.query(`select * from ANIMAL_TYPE where ID = ${element.resource.id} `, (err, results) => {
+                        if (err) throw err;
+                        if (results.length == 0) {
+                            db.query(`INSERT INTO ANIMAL_TYPE (ID, TYPE) VALUES ("${element.resource.id}", "${element.resource.slug}"); `, (err, results) => {
+                                if (err) throw err;
+                            });
+                        }
+                    });
+                });
             }
-        }catch(err){
+        } catch (err) {
             fs.appendFileSync("data/logs.txt", `An error ocurred accessing data from yummipets' API at ${new Date(Date.now()).toUTCString()}. ${err}\n`)
         }
     });
-    axios(yummytypesUrl).
-    then((res) => {
+
+    // Update Breeds from yummy api
+    let sizeBreeds;
+    db.query(`select count(*) from ANIMAL_BREED `, (err, results) => {
+        if (err) throw err;
+        sizeBreeds = results[0]["count(*)"]
+    });
+
+    axios(yummybreedsUrl).then((res) => {
         try { // api.yummipets could be not available
-            if(animaltypes.collection.length < res.data.collection.length){ //new data to be added
-                fs.writeFileSync("data/animaltypes.json", JSON.stringify(res.data), err => {
-                    fs.appendFileSync("data/logs.txt", `An error ocurred writing to file animaltypes.json at ${new Date(Date.now()).toUTCString()}. ${err}\n`)
-                })
+            if (res.data.extras.num_found > sizeBreeds) { //new data to be added
+                res.data.collection.forEach(element => {
+                    db.query(`select * from ANIMAL_BREED where ID = ${element.resource.id} `, (err, results) => {
+                        if (err) throw err;
+                        if (results.length == 0) {
+                            db.query(`INSERT INTO ANIMAL_BREED (ID, BREED, TYPE) VALUES ("${element.resource.id}", "${element.resource.lib}", "${element.resource.type.id}"); `, (err, results) => {
+                                if (err) throw err;
+                            });
+                        }
+                    });
+                });
             }
-        }catch(err){
+        } catch (err) {
             fs.appendFileSync("data/logs.txt", `An error ocurred accessing data from yummipets' API at ${new Date(Date.now()).toUTCString()}. ${err}\n`)
         }
-    })
+    });
 }
 
 module.exports.updateData = updateData;

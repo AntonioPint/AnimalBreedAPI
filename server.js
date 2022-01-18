@@ -3,31 +3,31 @@ const fs = require("fs");
 require("dotenv").config();
 const PORT = process.env.PORT || 8080;
 const jwt = require('jsonwebtoken');
-
-let { incrementCounter } = require("./counter");
+const mysql = require('mysql');
 let updtDt = require("./updatedata");
 let app = express();
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-let breeds, animaltypes = null;
+//database
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD
+});
 
-while (!breeds || !animaltypes) {
-    try {
-        breeds = JSON.parse(fs.readFileSync("data/breeds.json", "utf-8"));
-        animaltypes = JSON.parse(fs.readFileSync("data/animaltypes.json", "utf-8"));
-    } catch (err) {
-        updtDt.updateData();
-    }
-}
+db.connect((err)=>{
+    if(err) throw err;
+    console.log("Connected to the database")
+});
 
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
 
 app.use("/api", (req, res, next) => {
-
     if(!!req.headers.api_key || !!req.headers.API_KEY){
         authenticateApiKey(req, res, next);
     }else if(!!req.headers.authorization_token){
@@ -38,49 +38,50 @@ app.use("/api", (req, res, next) => {
     } 
 })
 
-app.get("/api/types/:id?", (req, res) => {
-    let response = [];
+app.get("/api/breeds/:id?", (req, res) => {
+    let sqlquery = "SELECT b.id , b.breed , t.type FROM ANIMAL_BREED b inner join ANIMAL_TYPE t on t.id = b.type where " ;
     let begin_date = Date.now();
-    animaltypes.collection.forEach(element => {
-        if (!req.params.id && !req.body.type) {
-            response.push({ "id": element.resource.id, "type": element.resource.slug })
-        } else if (!req.params.id ^ !req.body.type) {
-            if (!!req.params.id && req.params.id == element.resource.id) {
-                response.push({ "id": element.resource.id, "type": element.resource.slug })
-            }
-            if (!!req.body.type && req.body.type == element.resource.slug) {
-                response.push({ "id": element.resource.id, "type": element.resource.slug })
-            }
-        }
+    
+    if(req.params.id) sqlquery += `b.id = '${req.params.id}' and `
+    if(req.body.breed) sqlquery += `b.breed = '${req.body.breed}' and `
+    if(req.body.type) sqlquery += `t.type = '${req.body.type}' and `
+    sqlquery += "1 "; // to finish the and in the final
+
+    if(req.body.orderBy) {
+        sqlquery += `order by ${req.body.orderBy} `
+        if(req.body.orderDirection) sqlquery += `${req.body.orderDirection} `
+    }
+
+    db.query(sqlquery, (err, results) => {
+        if (err) throw err;
+        res.send(prettyJSON(results, Date.now() - begin_date));
     });
-    res.send(prettyJSON(response, Date.now() - begin_date));
+    
 });
 
-app.get("/api/breeds/:id?", (req, res) => {
-    let response = [];
+app.get("/api/types/:id?", (req, res) => {
+    let sqlquery = "SELECT id , type FROM ANIMAL_TYPE where " ;
     let begin_date = Date.now();
-    breeds.collection.forEach(element => {
-        if (!!req.params.id ^ !!req.body.breed ^ !!req.body.type) { //if only one is not undefined or not null
-            if (element.resource.lib == req.body.breed) {
-                response.push({ "id": element.resource.id, "breed": element.resource.lib, "type": element.resource.type.slug });
-            } else if (element.resource.type.slug == req.body.type) {
-                response.push({ "id": element.resource.id, "breed": element.resource.lib, "type": element.resource.type.slug });
-            } else if (element.resource.id == req.params.id) {
-                response.push({ "id": element.resource.id, "breed": element.resource.lib, "type": element.resource.type.slug });
-            }
-        } else { //if id is not undefined or null
-            response.push({ "id": element.resource.id, "breed": element.resource.lib, "type": element.resource.type.slug });
-        }
-    });
+    
+    if(req.params.id) sqlquery += `id = '${req.params.id}' and `
+    if(req.body.type) sqlquery += `type = '${req.body.type}' and `
+    sqlquery += "1 "; // to finish the and in the final
 
-    res.send(prettyJSON(response, Date.now() - begin_date));
+    if(req.body.orderBy) {
+        sqlquery += `order by ${req.body.orderBy} `
+        if(req.body.orderDirection) sqlquery += `${req.body.orderDirection} `
+    }
+
+    db.query(sqlquery, (err, results) => {
+        if (err) throw err;
+        res.send(prettyJSON(results, Date.now() - begin_date));
+    });
 });
 
 function authenticateApiKey(req, res, next){
     //API_KEY
     let api_key = req.headers.api_key || req.headers.API_KEY;
     if(!!api_key && process.env.API_KEY == api_key){
-        incrementCounter();
         next();
     }else{
         return res.status(500).send("Access Denied - Invalid API_KEY received")
@@ -89,7 +90,7 @@ function authenticateApiKey(req, res, next){
 
 function authenticateToken(req,res,next){
     const authtoken = req.headers.authorization_token;
-    if(authtoken == null) return res.sendStatus(401)
+    if(authtoken != null) return res.sendStatus(401)
     jwt.verify(authtoken, process.env.APP_TOKEN, (err, decoded) =>{
         if(err) return res.sendStatus(403)
         req.user = decoded.name;
@@ -105,7 +106,7 @@ function prettyJSON(response, responseTime) {
     }
 }
 
-updtDt.updateData();
-setInterval(updtDt.updateData, 399900099); //runs every 4 ⅗ days 
+updtDt.updateData(db);
+setInterval(()=>{updtDt.updateData(db)} , 399900099 ); //runs every 4 ⅗ days  
 
 app.listen(PORT, console.log(`Server running at port ${PORT} ...`));

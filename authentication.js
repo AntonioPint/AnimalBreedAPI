@@ -1,6 +1,4 @@
 const express = require("express");
-const req = require("express/lib/request");
-const res = require("express/lib/response");
 const jwt = require('jsonwebtoken');
 
 require("dotenv").config();
@@ -15,10 +13,10 @@ app.post("/login",(req,res) =>{
     let name = req.body.name;
     let password = req.body.password;
     if(name == "1234" && password == "1234"){
-        const token = jwt.sign({name, password}, process.env.APP_TOKEN);
+        const token = jwt.sign({name, password}, process.env.APP_TOKEN, {expiresIn: 20});
         return res.json({auth: true, token: token});
     }
-    res.status(500).json({message: "Invalid Login"});
+    res.status(500).json({auth: false, message: "Invalid Login"});
 });
 
 app.listen(PORT, console.log(`AuthServer running at port ${PORT} ...`));
