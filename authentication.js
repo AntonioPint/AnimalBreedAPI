@@ -13,7 +13,7 @@ app.post("/login",(req,res) =>{
     let name = req.body.name;
     let password = req.body.password;
     if(name == "1234" && password == "1234"){
-        const token = jwt.sign({name, password}, process.env.APP_TOKEN, {expiresIn: 20});
+        const token = jwt.sign({name, password}, process.env.APP_TOKEN, {expiresIn: 1800});
         return res.json({auth: true, token: token});
     }
     res.status(500).json({auth: false, message: "Invalid Login"});
