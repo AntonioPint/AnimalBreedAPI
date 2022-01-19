@@ -4,6 +4,7 @@ require("dotenv").config();
 const PORT = process.env.PORT || 8080;
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
+const { STRING } = require("mysql/lib/protocol/constants/types");
 let updtDt = require("./updatedata");
 let app = express();
 app.use(express.static(__dirname + '/public'));
@@ -47,9 +48,14 @@ app.get("/api/breeds/:id?", (req, res) => {
     if(req.body.type) sqlquery += `t.type = '${req.body.type}' and `
     sqlquery += "1 "; // to finish the and in the final
 
-    if(req.body.orderBy) {
+    if(req.body.orderBy && (req.body.orderBy.toUpperCase() == "BREED" || req.body.orderBy.toUpperCase() == "TYPE" || req.body.orderBy.toUpperCase() == "ID") ) {
         sqlquery += `order by ${req.body.orderBy} `
-        if(req.body.orderDirection) sqlquery += `${req.body.orderDirection} `
+        if(req.body.orderDirection && (req.body.orderBy.toUpperCase() == "DESC" || req.body.orderBy.toUpperCase() == "ASC")) sqlquery += `${req.body.orderDirection} `
+    }
+
+    if(req.body.limit){
+        sqlquery += `limit ${req.body.limit} `
+        if(req.body.page > 0) sqlquery += `offset ${(req.body.page - 1) * req.body.limit } `
     }
 
     db.query(sqlquery, (err, results) => {
@@ -66,11 +72,17 @@ app.get("/api/types/:id?", (req, res) => {
     if(req.params.id) sqlquery += `id = '${req.params.id}' and `
     if(req.body.type) sqlquery += `type = '${req.body.type}' and `
     sqlquery += "1 "; // to finish the and in the final
-
-    if(req.body.orderBy) {
+    
+    if(req.body.orderBy && (req.body.orderBy.toUpperCase() == "TYPE" || req.body.orderBy.toUpperCase() == "ID") ) {
         sqlquery += `order by ${req.body.orderBy} `
-        if(req.body.orderDirection) sqlquery += `${req.body.orderDirection} `
+        if(req.body.orderDirection && (req.body.orderBy.toUpperCase() == "DESC" || req.body.orderBy.toUpperCase() == "ASC")) sqlquery += `${req.body.orderDirection} `
     }
+
+    if(req.body.limit){
+        sqlquery += `limit ${req.body.limit} `
+        if(req.body.page > 0) sqlquery += `offset ${(req.body.page - 1) * req.body.limit } `
+    }
+
 
     db.query(sqlquery, (err, results) => {
         if (err) throw err;
