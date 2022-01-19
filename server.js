@@ -50,7 +50,7 @@ app.get("/api/breeds/:id?", (req, res) => {
 
     if(req.body.orderBy && (req.body.orderBy.toUpperCase() == "BREED" || req.body.orderBy.toUpperCase() == "TYPE" || req.body.orderBy.toUpperCase() == "ID") ) {
         sqlquery += `order by ${req.body.orderBy} `
-        if(req.body.orderDirection && (req.body.orderBy.toUpperCase() == "DESC" || req.body.orderBy.toUpperCase() == "ASC")) sqlquery += `${req.body.orderDirection} `
+        if(req.body.orderDirection && (req.body.orderDirection.toUpperCase() == "DESC" || req.body.orderDirection.toUpperCase() == "ASC")) sqlquery += `${req.body.orderDirection} `
     }
 
     if(req.body.limit){
@@ -75,7 +75,7 @@ app.get("/api/types/:id?", (req, res) => {
     
     if(req.body.orderBy && (req.body.orderBy.toUpperCase() == "TYPE" || req.body.orderBy.toUpperCase() == "ID") ) {
         sqlquery += `order by ${req.body.orderBy} `
-        if(req.body.orderDirection && (req.body.orderBy.toUpperCase() == "DESC" || req.body.orderBy.toUpperCase() == "ASC")) sqlquery += `${req.body.orderDirection} `
+        if(req.body.orderDirection && (req.body.orderDirection.toUpperCase() == "DESC" || req.body.orderDirection.toUpperCase() == "ASC")) sqlquery += `${req.body.orderDirection} `
     }
 
     if(req.body.limit){
