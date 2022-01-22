@@ -58,12 +58,13 @@ app.get("/api/breeds/:id?", (req, res) => {
     } 
     sqlquery += "1 "; // to finish the "and" in the final
 
-    if (req.body.orderBy && (req.body.orderBy.toUpperCase() == "BREED" || req.body.orderBy.toUpperCase() == "TYPE" || req.body.orderBy.toUpperCase() == "ID")) {
-        sqlquery += `order by ? `
-        values.push(req.body.orderBy)
-        if (req.body.orderDirection && (req.body.orderDirection.toUpperCase() == "DESC" || req.body.orderDirection.toUpperCase() == "ASC")){
-            sqlquery += `? `
-            values.push(req.body.orderDirection)
+    let orderBy = !!req.body.orderBy ? req.body.orderBy.toLowerCase() : "id"
+    if (orderBy == "breed" || orderBy == "type" || orderBy == "id") {
+        sqlquery += `order by ${orderBy} `
+
+        let orderDirection = !!req.body.orderDirection ? req.body.orderDirection.toLowerCase() : "asc"
+        if (orderDirection == "desc" || orderDirection == "asc"){
+            sqlquery += `${orderDirection} `
         } 
     }
 
@@ -77,6 +78,8 @@ app.get("/api/breeds/:id?", (req, res) => {
 
     db.query(sqlquery, values, (err, results) => {
         if (err) throw err;
+        console.log(sqlquery)
+        console.log(values)
         res.send(prettyJSON(results, Date.now() - begin_date));
     });
 
@@ -96,12 +99,12 @@ app.get("/api/types/:id?", (req, res) => {
     } 
     sqlquery += "1 "; // to finish the "and" in the final
 
-    if (req.body.orderBy && ( req.body.orderBy.toUpperCase() == "TYPE" || req.body.orderBy.toUpperCase() == "ID")) {
-        sqlquery += `order by ? `
-        values.push(req.body.orderBy)
-        if (req.body.orderDirection && (req.body.orderDirection.toUpperCase() == "DESC" || req.body.orderDirection.toUpperCase() == "ASC")){
-            sqlquery += `? `
-            values.push(req.body.orderDirection)
+    let orderBy = !!req.body.orderBy ? req.body.orderBy.toLowerCase() : "id"
+    if (orderBy == "type" || orderBy == "id") {
+        sqlquery += `order by ${orderBy} `
+        let orderDirection = !!req.body.orderDirection ? req.body.orderDirection.toLowerCase() : "asc"
+        if (orderDirection == "desc" || orderDirection == "asc"){
+            sqlquery += `${orderDirection} `
         } 
     }
 
@@ -115,6 +118,7 @@ app.get("/api/types/:id?", (req, res) => {
 
     db.query(sqlquery, values, (err, results) => {
         if (err) throw err;
+
         res.send(prettyJSON(results, Date.now() - begin_date));
     });
 });
