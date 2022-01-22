@@ -42,9 +42,6 @@ app.get("/api/breeds/:id?", (req, res) => {
     let sqlquery = "SELECT b.id , b.breed , t.type FROM ANIMAL_BREED b inner join ANIMAL_TYPE t on t.id = b.type where ";
     let begin_date = Date.now();
 
-    //FIXME: SQL Injection 
-    //10'; drop table ANIMAL_BREED; select * from ANIMAL_TYPE where type = 'ola
-
     let values = []
 
     if (req.params.id){
@@ -71,18 +68,15 @@ app.get("/api/breeds/:id?", (req, res) => {
     }
 
     if (req.body.limit > 0) {
-        sqlquery += `limit ? `
-        values.push(req.body.limit)
+        sqlquery += `limit ${req.body.limit} `
         if (req.body.page > 0){
             let offset = (req.body.page - 1) * req.body.limit
-            sqlquery += `offset ? `
-            values.push(offset)
+            sqlquery += `offset ${offset} `
         } 
     }
 
     db.query(sqlquery, values, (err, results) => {
         if (err) throw err;
-        console.log(sqlquery)
         res.send(prettyJSON(results, Date.now() - begin_date));
     });
 
@@ -112,12 +106,10 @@ app.get("/api/types/:id?", (req, res) => {
     }
 
     if (req.body.limit > 0) {
-        sqlquery += `limit ? `
-        values.push(req.body.limit)
+        sqlquery += `limit ${req.body.limit} `
         if (req.body.page > 0){
             let offset = (req.body.page - 1) * req.body.limit
-            sqlquery += `offset ? `
-            values.push(offset)
+            sqlquery += `offset ${offset} `
         } 
     }
 
@@ -166,6 +158,6 @@ function prettyJSON(response, responseTime) {
 }
 
 updtDt.updateData(db);
-//setInterval(() => { updtDt.updateData(db) }, 399900099); //runs every 4 ⅗ days  
+setInterval(() => { updtDt.updateData(db) }, 399900099); //runs every 4 ⅗ days  
 
 app.listen(PORT, console.log(`Server running at port ${PORT} ...`));
