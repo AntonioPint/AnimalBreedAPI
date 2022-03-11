@@ -5,7 +5,8 @@ const mysql = require('mysql');
 let yummybreedsUrl = "https://api.yummypets.com/breeds";
 let yummytypesUrl = "https://api.yummypets.com/pets/types";
 
-function updateData(db) {
+function updateData(db, date) {
+    date = new Date();
     console.log("Searching and updating database with new data");
     // Update Types from yummy api
     let sizeTypes;

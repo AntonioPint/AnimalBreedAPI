@@ -2,6 +2,7 @@
     width: 16.6%;   
     background-color: #35363A;
 }
+
 #description{
     width: 80%;
     display: block;
@@ -10,6 +11,7 @@
     margin: 5% auto;
     text-align: center;
 }
+
 .col-8{
     width: 66.8%;   
     color: #35363A;
@@ -37,10 +39,12 @@
     padding: 10px 10px;
     transition: 0.3s;
 }
+
 .notVisible{
     position: absolute; 
     left: -999em;
 }
+
 .hidden{
     display: none;
 }
@@ -49,6 +53,7 @@
     color: rgb(90, 117, 90);
     padding-left: 50px;
 }
+
 .toggleElement{
     display: block
 }
@@ -71,6 +76,7 @@ body{
 .removeLinkStyle{
     text-decoration: inherit; /* no underline */
 }
+
 .removeButtonStyle{
     background: none;
 	color: inherit;
@@ -114,4 +120,4 @@ body{
     #content{
         padding: 10px 10px;
     }
-  }
+}

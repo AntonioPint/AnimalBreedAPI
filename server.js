@@ -2,13 +2,15 @@ const mysql = require('mysql');
 const express = require("express");
 const jwt = require('jsonwebtoken');
 const updtDt = require("./updatedata");
+const dotenv = require("dotenv").config();
 const PORT = process.env.PORT || 8080;
-require("dotenv").config();
 
 let app = express();
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+let lastTimeUpdatedInfo = new Date();
 
 //database
 const db = mysql.createConnection({
@@ -44,18 +46,18 @@ app.get("/api/breeds/:id?", (req, res) => {
 
     let values = []
 
-    if (req.params.id){
+    if (req.params.id) {
         sqlquery += `b.id = ? and `;
         values.push(req.params.id)
-    } 
-    if (req.body.breed){
+    }
+    if (req.body.breed) {
         sqlquery += `b.breed = ? and `
         values.push(req.body.breed)
-    } 
-    if (req.body.type){
+    }
+    if (req.body.type) {
         sqlquery += `t.type = ? and `
         values.push(req.body.type)
-    } 
+    }
     sqlquery += "1 "; // to finish the "and" in the final
 
     let orderBy = !!req.body.orderBy ? req.body.orderBy.toLowerCase() : "id"
@@ -63,19 +65,22 @@ app.get("/api/breeds/:id?", (req, res) => {
         sqlquery += `order by ${orderBy} `
 
         let orderDirection = !!req.body.orderDirection ? req.body.orderDirection.toLowerCase() : "asc"
-        if (orderDirection == "desc" || orderDirection == "asc"){
+        if (orderDirection == "desc" || orderDirection == "asc") {
             sqlquery += `${orderDirection} `
-        } 
+        }
     }
 
     if (req.body.limit > 0) {
         sqlquery += `limit ${req.body.limit} `
-        if (req.body.page > 0){
+        if (req.body.page > 0) {
             let offset = (req.body.page - 1) * req.body.limit
             sqlquery += `offset ${offset} `
-        } 
+        }
     }
 
+    let a = new Promise(() => {
+
+    })
     db.query(sqlquery, values, (err, results) => {
         if (err) throw err;
         console.log(sqlquery)
@@ -89,31 +94,31 @@ app.get("/api/types/:id?", (req, res) => {
     let sqlquery = "SELECT id , type FROM ANIMAL_TYPE where ";
     let begin_date = Date.now();
     let values = []
-    if (req.params.id){
+    if (req.params.id) {
         sqlquery += `id = ? and `
         values.push(req.params.id)
-    } 
-    if (req.body.type){
+    }
+    if (req.body.type) {
         sqlquery += `type = ? and `
         values.push(req.body.type)
-    } 
+    }
     sqlquery += "1 "; // to finish the "and" in the final
 
     let orderBy = !!req.body.orderBy ? req.body.orderBy.toLowerCase() : "id"
     if (orderBy == "type" || orderBy == "id") {
         sqlquery += `order by ${orderBy} `
         let orderDirection = !!req.body.orderDirection ? req.body.orderDirection.toLowerCase() : "asc"
-        if (orderDirection == "desc" || orderDirection == "asc"){
+        if (orderDirection == "desc" || orderDirection == "asc") {
             sqlquery += `${orderDirection} `
-        } 
+        }
     }
 
     if (req.body.limit > 0) {
         sqlquery += `limit ${req.body.limit} `
-        if (req.body.page > 0){
+        if (req.body.page > 0) {
             let offset = (req.body.page - 1) * req.body.limit
             sqlquery += `offset ${offset} `
-        } 
+        }
     }
 
     db.query(sqlquery, values, (err, results) => {
@@ -123,14 +128,20 @@ app.get("/api/types/:id?", (req, res) => {
     });
 });
 
-app.post("/login",(req,res) =>{
+//TODO: add a better search functionality
+
+app.post("/login", (req, res) => {
     let name = req.body.name;
     let password = req.body.password;
     // if(name == "1234" && password == "1234"){
     //     const token = jwt.sign({name, password}, process.env.APP_TOKEN, {expiresIn: 1800});
     //     return res.json({auth: true, token: token});
     // }
-    res.status(500).json({auth: false, message: "Invalid Login"});
+    res.status(500).json({ auth: false, message: "Invalid Login" });
+});
+
+app.get("/lastDataUpdate", (req, res) => {
+    res.send(prettyJSON(lastTimeUpdatedInfo, 0));
 });
 
 function authenticateApiKey(req, res, next) {
@@ -153,6 +164,15 @@ function authenticateToken(req, res, next) {
     });
 }
 
+function hash(filename, cb) {
+    const sha = crypto.createHash('sha512')
+    sha.update('clinic\n')
+    fs.createReadStream(filename)
+        .on('data', data => sha.update(data))
+        .on('end', () => cb(null, sha.digest()))
+        .on('error', cb)
+}
+
 function prettyJSON(response, responseTime) {
     return {
         "response": response,
@@ -161,7 +181,7 @@ function prettyJSON(response, responseTime) {
     }
 }
 
-updtDt.updateData(db);
-setInterval(() => { updtDt.updateData(db) }, 399900099); //runs every 4 ⅗ days  
+updtDt.updateData(db, lastTimeUpdatedInfo);
+setInterval(() => { updtDt.updateData(db, lastTimeUpdatedInfo); }, 399900099); //runs every 4 ⅗ days  
 
-app.listen(PORT, console.log(`Server running at port ${PORT} ...`));
+app.listen(PORT, console.log(`Server running at port http://localhost:${PORT} ...`));
