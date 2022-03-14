@@ -12,6 +12,14 @@
     text-align: center;
 }
 
+#redirectsDiv{
+    display:flex;
+    justify-content: space-evenly;
+}
+#redirectsDiv a{
+    width: 30%;
+}
+
 .col-8{
     width: 66.8%;   
     color: #35363A;
@@ -119,5 +127,10 @@ body{
     }
     #content{
         padding: 10px 10px;
+    }
+    ::-webkit-scrollbar
+    {
+        width: 0px;
+        background-color:transparent;
     }
 }

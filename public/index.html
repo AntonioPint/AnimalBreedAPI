@@ -18,7 +18,10 @@
         <span id="description">AnimalBreedAPI is an API that provides the most common and popular breeds among the
             various pets in your household.
         </span>
-        <a href="https://rapidapi.com/F1lh0sQu3imada/api/animalbreedapi/"><img src="images/RapidAPI.PNG" style="width: 100%; height: 100px; object-fit: none;"></a>
+        <div id="redirectsDiv">
+            <a href="https://rapidapi.com/F1lh0sQu3imada/api/animalbreedapi/" ><img src="images/RapidAPI.PNG" style="width: 100%; height: 100px; object-fit: scale-down;"></a>
+            <a href="https://github.com/F1lh0sQu3imada/AnimalBreedAPI"><img src="images/Github.png" style="width: 100%; height: 100px; object-fit: scale-down;"></a>
+        </div>
         
         <h1>Documentation</h1>
 
@@ -91,7 +94,7 @@
                 <p>Gives a complete list of all the types of animals stored in the api. The list is returned in format
                     JSON. Every
                     object returned has an internal id and his name in English (EN).</p>
-                <div class="method" href="javascript:window.location.href = window.location.href + 'api/types'">
+                <div class="method" onclick="javascript:window.location.href = window.location.href + 'api/types'">
                     /api/types</div>
 
                 <div style="margin-top: 15px;">
@@ -145,9 +148,118 @@
                     </div>
                 </div>
             </div>
+            </br>
+            <div class="methodInfo">
+                <h2>POST</h2>
+                <p>Method that allows the login into the application. It is required to pass the name and password. It is returned a JSON object that shows if the auth was sucessfull and the token value or an error. The login is valid every 20 minutes. All information is in English (EN).</p>
+                <div class="method" onclick='javascript:window.open("login")'>
+                    /login</div>
+                <div style="margin-top: 15px;">
+                    <div id="request_div3" class="toggleRequestResponse">
+                        <h3><button class="removeButtonStyle" onclick="toggleResponseRequest('request_div3')"><i
+                                    class="fas fa-angle-down toggleRequest"></i></button> Request</h3>
+                        <div id="request_div3_p" class="notVisible">
+                            <h4>Body</h4>
+                            <ul>
+                                <li>name - Your username (string)</li>
+                                </br>
+                                <li>password - Your password (string)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="response_div3" class="toggleRequestResponse">
+                        <h3><button class="removeButtonStyle" onclick="toggleResponseRequest('response_div3')"><i
+                                    class="fas fa-angle-down toggleRequest"></i></button> Response</h3>
+                        <div id="response_div3_p" class="notVisible">
+                            <pre><code>
+    {
+        "response": [
+            {
+                "id": 4,
+                "breed": "Gecko",
+                "type": "reptile"
+            },{
+                "id": 990,
+                "breed": "Pomsky",
+                "type": "dog"
+            }
+        ],
+        "res_size": 2,
+        "res_time": "0ms"
+    }
+                        </code>
+                    </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </br>
+            <div class="methodInfo">
+                <h2>POST</h2>
+                <p>Gives a complete list of all the breeds of animals stored in the api. The list is returned in format
+                    JSON. Every
+                    object returned has an internal id, breed information ant type. All information is in English (EN).</p>
+                <div class="method" href="javascript:window.location.href = window.location.href + 'api/types'">
+                    /api/breeds</div>
+                <div style="margin-top: 15px;">
+                    <div id="request_div4" class="toggleRequestResponse">
+                        <h3><button class="removeButtonStyle" onclick="toggleResponseRequest('request_div4')"><i
+                                    class="fas fa-angle-down toggleRequest"></i></button> Request</h3>
+                        <div id="request_div4_p" class="notVisible">
+                            <h4>Headers</h4>
+                            <ul>
+                                <li>API_KEY - The API Key that is needed to receive data from the application</li>
+                            </ul>
+                            <h4>Params</h4>
+                            <ul>
+                                <li>id - The id of the type of animal (int)</li>
+                            </ul>
+                            <h4>Body</h4>
+                            <ul>
+                                <li>breed - The the breed of animal (string)</li>
+                                </br>
+                                <li>type - The the type of animal (string)</li>
+                                </br>
+                                <li>orderBy - The kind of value that is being ordered. Could be id, type or breed (string)</li>
+                                </br>
+                                <li>orderDirection - The direction of the order. ASC (ascending order) or DESC (descending order) (string)</li>
+                                </br>
+                                <li>limit - Limits the number of results</li>
+                                </br>
+                                <li>page - When given a limit, returns the page number x of results</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="response_div4" class="toggleRequestResponse">
+                        <h3><button class="removeButtonStyle" onclick="toggleResponseRequest('response_div4')"><i
+                                    class="fas fa-angle-down toggleRequest"></i></button> Response</h3>
+                        <div id="response_div4_p" class="notVisible">
+                            <pre><code>
+    {
+        "response": [
+            {
+                "id": 4,
+                "breed": "Gecko",
+                "type": "reptile"
+            },{
+                "id": 990,
+                "breed": "Pomsky",
+                "type": "dog"
+            }
+        ],
+        "res_size": 2,
+        "res_time": "0ms"
+    }
+                        </code>
+                    </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </br>
         </div>
-        <div style="text-align:center">
-            Last Time Updated: <span id="lastUpdatedInfoSpan">aa</span> 
+        <div style="text-align:center; margin-top:1rem">
+            Last Time Updated: <span id="lastUpdatedInfoSpan">Not available</span> 
         </div>
     </div>
     <aside class="col-2"></aside>
@@ -155,4 +267,3 @@
 <script src="scripts/index.js"></script>
 
 </html>
-<!-- Gives a complete list of all the breeds stored in the api. The list is returned in format JSON. Every object returned has an internal id , the name of the breed and how the type of breed. all in English (EN). -->

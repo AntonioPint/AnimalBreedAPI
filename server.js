@@ -1,16 +1,15 @@
 const mysql = require('mysql');
 const express = require("express");
-const jwt = require('jsonwebtoken');
-const updtDt = require("./updatedata");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const PORT = process.env.PORT || 8080;
+const updtDt = require("./updatedata");
+const fs = require("fs");
+const sout = require("./consoleColor");
 
 let app = express();
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-let lastTimeUpdatedInfo = new Date();
 
 //database
 const db = mysql.createConnection({
@@ -21,167 +20,17 @@ const db = mysql.createConnection({
 });
 
 db.connect((err) => {
-    if (err) throw err;
-    console.log("Connected to the database")
-});
-
-app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/index.html");
-});
-
-app.use("/api", (req, res, next) => {
-    if (!!req.headers.api_key || !!req.headers.API_KEY) {
-        authenticateApiKey(req, res, next);
-    } else if (!!req.headers.authorization_token) {
-        //not for production yet
-        //authenticateToken(req, res, next);
+    if (err) {
+        fs.appendFileSync("data/logs.txt", `An error ocurred while connecting to the main database at ${new Date(Date.now()).toUTCString()}. ${err}\n`)
+        sout.me("Error:", { background: "red" }, " Couldn't connect to database: ", "Could be due to VPN", { colour: "green" })
     } else {
-        res.status(500).json("No API_KEY or authorization_token received")
+        sout.me("Connected", { bright: "yellow" }, " to the database")
     }
-})
-
-app.get("/api/breeds/:id?", (req, res) => {
-    let sqlquery = "SELECT b.id , b.breed , t.type FROM ANIMAL_BREED b inner join ANIMAL_TYPE t on t.id = b.type where ";
-    let begin_date = Date.now();
-
-    let values = []
-
-    if (req.params.id) {
-        sqlquery += `b.id = ? and `;
-        values.push(req.params.id)
-    }
-    if (req.body.breed) {
-        sqlquery += `b.breed = ? and `
-        values.push(req.body.breed)
-    }
-    if (req.body.type) {
-        sqlquery += `t.type = ? and `
-        values.push(req.body.type)
-    }
-    sqlquery += "1 "; // to finish the "and" in the final
-
-    let orderBy = !!req.body.orderBy ? req.body.orderBy.toLowerCase() : "id"
-    if (orderBy == "breed" || orderBy == "type" || orderBy == "id") {
-        sqlquery += `order by ${orderBy} `
-
-        let orderDirection = !!req.body.orderDirection ? req.body.orderDirection.toLowerCase() : "asc"
-        if (orderDirection == "desc" || orderDirection == "asc") {
-            sqlquery += `${orderDirection} `
-        }
-    }
-
-    if (req.body.limit > 0) {
-        sqlquery += `limit ${req.body.limit} `
-        if (req.body.page > 0) {
-            let offset = (req.body.page - 1) * req.body.limit
-            sqlquery += `offset ${offset} `
-        }
-    }
-
-    let a = new Promise(() => {
-
-    })
-    db.query(sqlquery, values, (err, results) => {
-        if (err) throw err;
-        console.log(sqlquery)
-        console.log(values)
-        res.send(prettyJSON(results, Date.now() - begin_date));
-    });
-
 });
 
-app.get("/api/types/:id?", (req, res) => {
-    let sqlquery = "SELECT id , type FROM ANIMAL_TYPE where ";
-    let begin_date = Date.now();
-    let values = []
-    if (req.params.id) {
-        sqlquery += `id = ? and `
-        values.push(req.params.id)
-    }
-    if (req.body.type) {
-        sqlquery += `type = ? and `
-        values.push(req.body.type)
-    }
-    sqlquery += "1 "; // to finish the "and" in the final
+require("./endpoints")(app, db)
 
-    let orderBy = !!req.body.orderBy ? req.body.orderBy.toLowerCase() : "id"
-    if (orderBy == "type" || orderBy == "id") {
-        sqlquery += `order by ${orderBy} `
-        let orderDirection = !!req.body.orderDirection ? req.body.orderDirection.toLowerCase() : "asc"
-        if (orderDirection == "desc" || orderDirection == "asc") {
-            sqlquery += `${orderDirection} `
-        }
-    }
-
-    if (req.body.limit > 0) {
-        sqlquery += `limit ${req.body.limit} `
-        if (req.body.page > 0) {
-            let offset = (req.body.page - 1) * req.body.limit
-            sqlquery += `offset ${offset} `
-        }
-    }
-
-    db.query(sqlquery, values, (err, results) => {
-        if (err) throw err;
-
-        res.send(prettyJSON(results, Date.now() - begin_date));
-    });
-});
-
-//TODO: add a better search functionality
-
-app.post("/login", (req, res) => {
-    let name = req.body.name;
-    let password = req.body.password;
-    // if(name == "1234" && password == "1234"){
-    //     const token = jwt.sign({name, password}, process.env.APP_TOKEN, {expiresIn: 1800});
-    //     return res.json({auth: true, token: token});
-    // }
-    res.status(500).json({ auth: false, message: "Invalid Login" });
-});
-
-app.get("/lastDataUpdate", (req, res) => {
-    res.send(prettyJSON(lastTimeUpdatedInfo, 0));
-});
-
-function authenticateApiKey(req, res, next) {
-    //API_KEY
-    let api_key = req.headers.api_key || req.headers.API_KEY;
-    if (!!api_key && process.env.API_KEY == api_key) {
-        next();
-    } else {
-        return res.status(500).send("Access Denied - Invalid API_KEY received")
-    }
-}
-
-function authenticateToken(req, res, next) {
-    const authtoken = req.headers.authorization_token;
-    if (authtoken != null) return res.sendStatus(401)
-    jwt.verify(authtoken, process.env.APP_TOKEN, (err, decoded) => {
-        if (err) return res.sendStatus(403)
-        req.user = decoded.name;
-        next();
-    });
-}
-
-function hash(filename, cb) {
-    const sha = crypto.createHash('sha512')
-    sha.update('clinic\n')
-    fs.createReadStream(filename)
-        .on('data', data => sha.update(data))
-        .on('end', () => cb(null, sha.digest()))
-        .on('error', cb)
-}
-
-function prettyJSON(response, responseTime) {
-    return {
-        "response": response,
-        "res_size": response.length,
-        "res_time": responseTime + "ms"
-    }
-}
-
-updtDt.updateData(db, lastTimeUpdatedInfo);
-setInterval(() => { updtDt.updateData(db, lastTimeUpdatedInfo); }, 399900099); //runs every 4 ⅗ days  
+//updtDt.updateData(db);
+// setInterval(() => { updtDt.updateData(db, lastTimeUpdatedInfo); }, 399900099); //runs every 4 ⅗ days  
 
 app.listen(PORT, console.log(`Server running at port http://localhost:${PORT} ...`));

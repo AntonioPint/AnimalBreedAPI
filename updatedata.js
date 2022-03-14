@@ -1,13 +1,10 @@
 const fs = require("fs");
 const axios = require("axios");
-const mysql = require('mysql');
 
 let yummybreedsUrl = "https://api.yummypets.com/breeds";
 let yummytypesUrl = "https://api.yummypets.com/pets/types";
 
-function updateData(db, date) {
-    date = new Date();
-    console.log("Searching and updating database with new data");
+function updateData(db) {
     // Update Types from yummy api
     let sizeTypes;
     db.query(`select count(*) from ANIMAL_TYPE `, (err, results) => {
@@ -24,6 +21,8 @@ function updateData(db, date) {
                         if (results.length == 0) {
                             db.query(`INSERT INTO ANIMAL_TYPE (ID, TYPE) VALUES ("${element.resource.id}", "${element.resource.slug}"); `, (err, results) => {
                                 if (err) throw err;
+                                //add trigger
+                                db.query(`Insert into DATABASE_LOG(ACTION, DESCRIPTION , DATE , USER_ID) values('INSERT', 'Added new ANIMAL_TYPE', now(), 1)`);
                             });
                         }
                     });
@@ -50,6 +49,8 @@ function updateData(db, date) {
                         if (results.length == 0) {
                             db.query(`INSERT INTO ANIMAL_BREED (ID, BREED, TYPE) VALUES ("${element.resource.id}", "${element.resource.lib}", "${element.resource.type.id}"); `, (err, results) => {
                                 if (err) throw err;
+                                //add trigger
+                                db.query(`Insert into DATABASE_LOG(ACTION, DESCRIPTION , DATE , USER_ID) values('INSERT', 'Added new ANIMAL_BREED', now(), 1)`);
                             });
                         }
                     });
