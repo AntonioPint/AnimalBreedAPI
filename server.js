@@ -2,14 +2,30 @@ const mysql = require('mysql');
 const express = require("express");
 require("dotenv").config();
 const PORT = process.env.PORT || 8080;
-const updtDt = require("./updatedata");
-const fs = require("fs");
+const rateLimit = require('express-rate-limit')
+const slowDown = require("express-slow-down");
 const sout = require("./consoleColor");
 
 let app = express();
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.enable("trust proxy");
+
+//Express rate limit
+app.use(rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+	max: 20, // Limit each IP to 100 requests per `window` (here, per 1 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+}));
+
+//Express slow down
+app.use(slowDown({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    delayAfter: 10, // allow 5 requests per 5 minutes, then...
+    delayMs: 500 // begin adding 500ms of delay per request above 100:
+}));
 
 //database
 const db = mysql.createConnection({
@@ -21,16 +37,30 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) {
-        fs.appendFileSync("data/logs.txt", `An error ocurred while connecting to the main database at ${new Date(Date.now()).toUTCString()}. ${err}\n`)
         sout.me("Error:", { background: "red" }, " Couldn't connect to database: ", "Could be due to VPN", { colour: "green" })
     } else {
         sout.me("Connected", { bright: "yellow" }, " to the database")
     }
 });
 
-require("./endpoints")(app, db)
+//Inicial page
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/index.html");
+});
 
-//updtDt.updateData(db);
-// setInterval(() => { updtDt.updateData(db, lastTimeUpdatedInfo); }, 399900099); //runs every 4 ⅗ days  
+require("./endpoints/apiEndpoints")(app, db);
+require("./endpoints/authEndpoints")(app, db);
+const serverFunctions = require("./serverFunctions")(db);
+
+serverFunctions.getLastTimeDataChanged().then((response) => {
+    console.log
+    var diffDays = parseInt((new Date() - new Date(response[0].DATE)) / (1000 * 60 * 60 * 24), 10); 
+    
+    // Updates every 3 days
+    if(diffDays >= 3){
+        sout.me("UPDATING ... " + diffDays, {colour:"red"})
+        serverFunctions.updateData() 
+    }
+});
 
 app.listen(PORT, console.log(`Server running at port http://localhost:${PORT} ...`));
