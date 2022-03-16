@@ -47,12 +47,12 @@ module.exports = (db) => {
             try { // api.yummipets could be not available
                 if (res.data.collection.length > sizeTypes) { //new data to be added
                     res.data.collection.forEach(element => {
-                        db.query(`select * from ANIMAL_TYPE where ID = ${element.resource.id} `, (err, results) => {
+                        db.query(`select count(*) from ANIMAL_TYPE where ID = ${element.resource.id} `, (err, results) => {
                             if (err) throw err;
-                            if (results.length == 0) {
+                            if (results[0]["count(*)"] == 0) {
                                 db.query(`INSERT INTO ANIMAL_TYPE (ID, TYPE) VALUES ("${element.resource.id}", "${element.resource.slug}"); `, (err, results) => {
                                     if (err) throw err;
-                                    //add trigger
+                                    //TODO: add trigger
                                     db.query(`Insert into DATABASE_LOG(ACTION, DESCRIPTION , DATE , USER_ID) values('INSERT', 'Added new ANIMAL_TYPE', now(), 1)`);
                                 });
                             }
@@ -75,12 +75,12 @@ module.exports = (db) => {
             try { // api.yummipets could be not available
                 if (res.data.extras.num_found > sizeBreeds) { //new data to be added
                     res.data.collection.forEach(element => {
-                        db.query(`select * from ANIMAL_BREED where ID = ${element.resource.id} `, (err, results) => {
+                        db.query(`select count(*) from ANIMAL_BREED where ID = ${element.resource.id} `, (err, results) => {
                             if (err) throw err;
-                            if (results.length == 0) {
+                            if (results[0]["count(*)"] == 0) {
                                 db.query(`INSERT INTO ANIMAL_BREED (ID, BREED, TYPE) VALUES ("${element.resource.id}", "${element.resource.lib}", "${element.resource.type.id}"); `, (err, results) => {
                                     if (err) throw err;
-                                    //add trigger
+                                    //TODO: add trigger
                                     db.query(`Insert into DATABASE_LOG(ACTION, DESCRIPTION , DATE , USER_ID) values('INSERT', 'Added new ANIMAL_BREED', now(), 1)`);
                                 });
                             }
@@ -94,7 +94,6 @@ module.exports = (db) => {
     }
 
     async function getLastTimeDataChanged() {
-
         let date = await executeQueryAsync("SELECT DATE from DATABASE_LOG where ACTION = 'INSERT' or ACTION = 'UPDATE' or ACTION = 'DELETE' or ACTION = 'CHECK' order by date desc limit 1")
         return date[0] ? date : [{DATE:'1970-01-01T19:30:00.000Z'}]
     }
