@@ -66,7 +66,7 @@ function checkForNewDataFromAPI(){
 checkForNewDataFromAPI()
 
 //If the server does not restart, after 3 and a half days checks for new data
-setInterval(checkForNewDataFromAPI(), 3.5*24*60*60*1000)
+setInterval(checkForNewDataFromAPI, 3.5*24*60*60*1000)
 
 
 app.listen(PORT, console.log(`Server running at port http://localhost:${PORT} ...`));
