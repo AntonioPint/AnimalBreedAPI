@@ -15,7 +15,7 @@ app.enable("trust proxy");
 //Express rate limit
 app.use(rateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
-	max: 20, // Limit each IP to 100 requests per `window` (here, per 1 minutes)
+	max: 20, // Limit each IP to 20 requests per `window` (here, per 5 minutes)
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 }));
@@ -23,8 +23,8 @@ app.use(rateLimit({
 //Express slow down
 app.use(slowDown({
     windowMs: 5 * 60 * 1000, // 5 minutes
-    delayAfter: 10, // allow 5 requests per 5 minutes, then...
-    delayMs: 500 // begin adding 500ms of delay per request above 100:
+    delayAfter: 10, // allow 10 requests per 5 minutes, then...
+    delayMs: 500 // begin adding 500ms of delay per request above 10:
 }));
 
 //database
@@ -52,15 +52,21 @@ require("./endpoints/apiEndpoints")(app, db);
 require("./endpoints/authEndpoints")(app, db);
 const serverFunctions = require("./serverFunctions")(db);
 
-serverFunctions.getLastTimeDataChanged().then((response) => {
-    console.log
-    var diffDays = parseInt((new Date() - new Date(response[0].DATE)) / (1000 * 60 * 60 * 24), 10); 
-    
-    // Updates every 3 days
-    if(diffDays >= 3){
-        sout.me("UPDATING ... " + diffDays, {colour:"red"})
-        serverFunctions.updateData() 
-    }
-});
+function checkForNewDataFromAPI(){
+    serverFunctions.getLastTimeDataChanged().then((response) => {
+        var diffDays = parseInt((new Date() - new Date(response[0].DATE)) / (1000 * 60 * 60 * 24), 10); 
+        // Updates every 3 days
+        if(diffDays >= 3){
+            sout.me("UPDATING ... " + diffDays, {colour:"red"})
+            serverFunctions.updateData() 
+        }
+    });
+}
+//When server starts, searches for new information from API
+checkForNewDataFromAPI()
+
+//If the server does not restart, after 3 and a half days checks for new data
+setInterval(checkForNewDataFromAPI(), 3.5*24*60*60*1000)
+
 
 app.listen(PORT, console.log(`Server running at port http://localhost:${PORT} ...`));
