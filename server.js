@@ -43,10 +43,17 @@ db.connect((err) => {
     }
 });
 
+//Inicial Middleware
+app.use("/", (req, res, next) =>{
+    req.requestDate = new Date()
+    next()
+})
+
 //Inicial page
-app.get("/", (req, res) => {
+app.get("/",  (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
+
 
 require("./endpoints/apiEndpoints")(app, db);
 require("./endpoints/authEndpoints")(app, db);
@@ -67,6 +74,5 @@ checkForNewDataFromAPI()
 
 //If the server does not restart, after 3 and a half days checks for new data
 setInterval(checkForNewDataFromAPI, 3.5*24*60*60*1000)
-
 
 app.listen(PORT, console.log(`Server running at port http://localhost:${PORT} ...`));
