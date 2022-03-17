@@ -20,11 +20,6 @@ async function getLastTimeUpdatedInfo(){
     return new Date(time.response).toGMTString();
 }
 
-async function redirectToAPI(url) {
-    let completeurl = window.location.href + url;
-    await fetch(completeurl, {method: "POST", headers: {"API_KEY": process.env.API_KEY}})
-}
-
 getLastTimeUpdatedInfo().then(
     function(valor){
         document.getElementById("lastUpdatedInfoSpan").innerText = valor;

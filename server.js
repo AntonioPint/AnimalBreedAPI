@@ -54,10 +54,14 @@ const serverFunctions = require("./serverFunctions")(db);
 
 function checkForNewDataFromAPI(){
     serverFunctions.getLastTimeDataChanged().then((response) => {
-        sout.me("Updating",{colour: "green"}," Data... ")
-        serverFunctions.updateData()    
+        let diffDays = parseInt((new Date() - new Date(response[0].DATE)) / (1000 * 60 * 60 * 24), 10); 
+        if(diffDays >= 3){
+            sout.me("Updating",{colour: "green"}," Data... ")
+            serverFunctions.updateData()    
+        }       
     });
 }
+
 //When server starts, searches for new information from API
 checkForNewDataFromAPI()
 
