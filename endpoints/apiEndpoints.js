@@ -29,7 +29,6 @@ module.exports = function (app, db) {
             sqlquery += `b.id = ? and `;
             values.push(req.params.id)
         }
-
         sqlquery += "1 "; // to finish the "and" in the final
 
         let orderBy = !!req.body.orderBy ? req.body.orderBy.toLowerCase() : "id"
@@ -87,7 +86,6 @@ module.exports = function (app, db) {
             sqlquery += `id = ? and `
             values.push(req.params.id)
         }
-
         sqlquery += "1 "; // to finish the "and" in the final
 
         let orderBy = !!req.body.orderBy ? req.body.orderBy.toLowerCase() : "id"
