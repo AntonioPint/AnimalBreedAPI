@@ -73,7 +73,7 @@ module.exports = function (app, db) {
                 .map(x => x);
             }
 
-            res.send(prettyfyJSON({ response: results, responseTime: Date.now() - req.requestDate }));
+            res.send(prettyfyJSON({ response: results, requestDate: req.requestDate }));
         });
 
     });
@@ -119,7 +119,7 @@ module.exports = function (app, db) {
                 .map(x => x);
             }
 
-            res.send(prettyfyJSON({ response: results, responseTime: Date.now() - req.requestDate }));
+            res.send(prettyfyJSON({ response: results, requestDate: req.requestDate }));
         });
     });
 

@@ -5,6 +5,7 @@ const PORT = process.env.PORT || 8080;
 const rateLimit = require('express-rate-limit')
 const slowDown = require("express-slow-down");
 const sout = require("./consoleColor");
+const { lookup } = require('geoip-lite');
 
 let app = express();
 app.use(express.static(__dirname + '/public'));
@@ -46,6 +47,7 @@ db.connect((err) => {
 //Inicial Middleware
 app.use("/", (req, res, next) =>{
     req.requestDate = new Date()
+    db.query("INSERT INTO `USER_LOG`(`USER_ID`, `DATE`) VALUES (7,now())")
     next()
 })
 

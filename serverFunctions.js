@@ -4,6 +4,14 @@ const yummybreedsUrl = "https://api.yummypets.com/breeds";
 const yummytypesUrl = "https://api.yummypets.com/pets/types";
 
 module.exports = (db) => {
+    
+    function saveAccessRegistry(){
+        
+    }
+
+    function createUser(){
+        executeQueryAsync('INSERT INTO USER(ID, NAME, EMAIL, PASSWORD, ROLE) VALUES ()', []);
+    }
 
     function executeQueryAsync(mysqlQuery, values) {
         return new Promise((resolve, reject) => {
@@ -21,12 +29,11 @@ module.exports = (db) => {
 
         if (obj.response) {
             responseObj.response = obj.response
-            responseObj.res_time = obj.responseTime ? obj.responseTime + "ms" : null
+            responseObj.res_time = obj.requestDate ? (Date.now() - obj.requestDate) + "ms" : null
 
             if (Array.isArray(obj.response)) {
                 responseObj.res_size = obj.response ? obj.response.length : 0
             }
-
         } else {
             responseObj.error = obj.error
         }
