@@ -47,7 +47,6 @@ db.connect((err) => {
 //Inicial Middleware
 app.use("/", (req, res, next) =>{
     req.requestDate = new Date()
-    db.query("INSERT INTO `USER_LOG`(`USER_ID`, `DATE`) VALUES (7,now())")
     next()
 })
 

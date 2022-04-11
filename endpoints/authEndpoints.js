@@ -65,13 +65,18 @@ module.exports = function (app,db){
             next();
         });
     }
+
+    function authenticateApiKey(req, res, next){
+        return req.headers["API_KEY"] == process.env.API_KEY ? next() : res.status(403).send(prettyfyJSON({ error: "Access Denied - Invalid token received" }));
+    }
     
     function hash(text) {
         return crypto.createHash('sha512').update(text).digest('hex');
     }
 
     return {
-        authenticateToken: authenticateToken
+        authenticateToken: authenticateToken,
+        authenticateApiKey: authenticateApiKey
     }
 }
 

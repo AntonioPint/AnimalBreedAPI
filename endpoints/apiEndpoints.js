@@ -3,18 +3,23 @@ require("dotenv").config();
 module.exports = function (app, db) {
     const serverFunctions = require("../serverFunctions")(db);
     const prettyfyJSON = serverFunctions.prettyfyJSON;
-    const {authenticateToken} = require("./authEndpoints")(app, db);
+    const {authenticateToken, authenticateApiKey} = require("./authEndpoints")(app, db);
 
     app.use("/api", (req, res, next) => {
         Object.entries(req.body).map((element) => {
+            //wtf does this do? I forgot
             if(typeof(element[1] == "string")){
                 req.body[element[0]] = element[1].trim()
             }
         });
         
         if (req.method != "GET") {
+            db.query("INSERT INTO `USER_LOG`(`USER_ID`, `DATE`) VALUES (7,now())")
             authenticateToken(req, res, next);
+            
         } else {
+            //FIXME:
+            authenticateApiKey(req,res,next);
             next();
         }
     })
