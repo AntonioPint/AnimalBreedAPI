@@ -14,12 +14,12 @@ module.exports = function (app, db) {
         });
         
         if (req.method != "GET") {
-            db.query("INSERT INTO `USER_LOG`(`USER_ID`, `DATE`) VALUES (7,now())")
             authenticateToken(req, res, next);
-            
         } else {
             //FIXME:
             //authenticateApiKey(req,res,next);
+
+            db.query("INSERT INTO `USER_LOG`(`USER_ID`, `DATE`) VALUES (7,now())")
             next();
         }
     })
