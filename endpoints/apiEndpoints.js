@@ -19,7 +19,7 @@ module.exports = function (app, db) {
             
         } else {
             //FIXME:
-            authenticateApiKey(req,res,next);
+            //authenticateApiKey(req,res,next);
             next();
         }
     })
