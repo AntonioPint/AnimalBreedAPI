@@ -7,7 +7,7 @@ module.exports = function (app, db) {
 
     app.use("/api", (req, res, next) => {
         Object.entries(req.body).map((element) => {
-            //wtf does this do? I forgot
+            //Trims the body values. Ex. Limit 10_
             if(typeof(element[1] == "string")){
                 req.body[element[0]] = element[1].trim()
             }
@@ -16,10 +16,8 @@ module.exports = function (app, db) {
         if (req.method != "GET") {
             authenticateToken(req, res, next);
         } else {
-            //FIXME:
-            //authenticateApiKey(req,res,next);
+            authenticateApiKey(req,res,next);
             db.query("INSERT INTO `USER_LOG`(`USER_ID`, `DATE`) VALUES (7,now())")
-            next();
         }
     })
 
