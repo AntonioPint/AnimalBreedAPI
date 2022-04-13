@@ -68,7 +68,8 @@ module.exports = function (app,db){
 
     function authenticateApiKey(req, res, next){
         //FIXME:
-        return req.headers["API_KEY"] == process.env.API_KEY ? next() : res.status(403).send(prettyfyJSON({ error: "Access Denied - Invalid token received" }));
+        let api_key_received = req.headers["API_KEY"] ? req.headers["API_KEY"] : req.headers["api_key"]
+        return api_key_received == process.env.API_KEY ? next() : res.status(403).send(prettyfyJSON({ error: "Access Denied - Invalid token received" }));
     }
     
     function hash(text) {
