@@ -55,7 +55,6 @@ app.get("/",  (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
 
-
 require("./endpoints/apiEndpoints")(app, db);
 require("./endpoints/authEndpoints")(app, db);
 const serverFunctions = require("./serverFunctions")(db);

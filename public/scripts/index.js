@@ -25,3 +25,5 @@ getLastTimeUpdatedInfo().then(
         document.getElementById("lastUpdatedInfoSpan").innerText = valor;
     }
 );
+
+console.log("Done by António Pinto")

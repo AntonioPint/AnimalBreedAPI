@@ -1,4 +1,3 @@
-
 function getSubstrings(text) {
     let result = [];
 
@@ -24,16 +23,11 @@ function getSearchResult(input, database) {
 
     let substrings = []
 
-    input.map((element) => {
-        substrings = substrings.concat(getSubstrings(element));
-    });
+    for(let i = 0; i < input.length ; i++ ){
+        substrings = substrings.concat(getSubstrings(input[i]));
+    }
 
-    let values = database.map(element => {
-        return element
-        //does nothing
-    })
-
-    values.map(value => {
+    database.map(value => {
         result = result.concat(substrings.map(substr => {
             return { id: value["id"], substr: substr }
         }).filter(element => {
@@ -65,4 +59,6 @@ let database = [
     }
 ];
 
+console.time()
 console.log(getSearchResult("coelho", database))
+console.timeEnd()
