@@ -37,9 +37,8 @@ function getSearchResult(input, database) {
 
     let aux = {}
 
-    result.map(element => {
+    result.forEach(element => {
         element["substr"] = element["substr"].length
-
         aux[element["id"]] = !isNaN(aux[element["id"]]) ? aux[element["id"]] + element["substr"] : element["substr"]
     });
 
