@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 const express = require("express");
 require("dotenv").config();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT;
 const rateLimit = require('express-rate-limit')
 const slowDown = require("express-slow-down");
 const sout = require("./consoleColor");
@@ -48,7 +48,8 @@ db.connect((err) => {
 app.use("/", (req, res, next) =>{
     req.requestDate = new Date()
     next()
-})
+    console.log("Middleware23")
+});
 
 //Inicial page
 app.get("/",  (req, res) => {
